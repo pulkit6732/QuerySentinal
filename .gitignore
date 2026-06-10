@@ -1,0 +1,59 @@
+# ── CREDENTIALS — NEVER COMMIT ─────────────────────────────────────────────
+.env
+*.env
+.env.local
+*.env.local
+.env.*.local
+*.key
+*.pem
+service-account*.json
+gcp-credentials*.json
+
+# ── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Node / Frontend ─────────────────────────────────────────────────────────
+node_modules/
+.next/
+out/
+.npm
+*.tsbuildinfo
+
+# ── IDE ─────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Testing / Coverage ──────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# ── Docker ──────────────────────────────────────────────────────────────────
+*.dockerfile.local
+
+# ── Misc ────────────────────────────────────────────────────────────────────
+*.tmp
+*.bak
+.cache/
+.fastembed_cache/
+
+# AI tooling artifacts
+.claude/
