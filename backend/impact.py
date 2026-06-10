@@ -14,7 +14,7 @@ The model is intentionally transparent and conservative:
   anomaly_mult    = per-type severity weight (SEMANTIC_VELOCITY_SPIKE = 2.5×)
 
 This does NOT include engineering triage time — that is separately reported as
-engineer_triage_usd = 3.4 hours × $150/hour (industry average, MongoDB survey).
+engineer_triage_usd = 3.4 hours × $150/hour (configurable modeling assumption).
 
 Usage:
     from impact import estimate_dollar_impact
@@ -34,7 +34,7 @@ logger = logging.getLogger("impact")
 # ── Constants ─────────────────────────────────────────────────────────────────
 
 _ENGINEER_HOURLY_RATE_USD = 150.0    # median senior SRE/DBA rate
-_MEAN_TRIAGE_HOURS        = 3.4      # MongoDB on-call incident survey average
+_MEAN_TRIAGE_HOURS        = 3.4      # modeling assumption (configurable); ~MTTR for a manual DB triage
 _COST_PER_QPS_PER_MIN     = 0.15     # Atlas M30+ throughput cost proxy ($/QPS/min)
 
 # Per-anomaly-type base cost multiplier.

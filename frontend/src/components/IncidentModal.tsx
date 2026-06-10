@@ -239,9 +239,13 @@ export function IncidentModal({ anomaly, incident, onClose }: IncidentModalProps
                 <div className="bg-green-900/20 border border-success/30 rounded-lg p-4 flex items-start gap-3">
                   <CheckCircle2 size={20} className="text-success shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-semibold text-success">Remediation Executed</p>
+                    <p className="text-sm font-semibold text-success">Remediation Approved</p>
                     <p className="text-xs text-gray-300 mt-1">
-                      Option {(approveResult as Record<string, unknown>)['option_executed'] as number} has been applied via MCP.
+                      Option {(approveResult as Record<string, unknown>)['option_executed'] as number}
+                      {(approveResult as Record<string, unknown>)['option_title']
+                        ? ` — ${(approveResult as Record<string, unknown>)['option_title'] as string}`
+                        : ''}
+                      {' '}approved and recorded to the immutable audit trail.
                     </p>
                   </div>
                 </div>

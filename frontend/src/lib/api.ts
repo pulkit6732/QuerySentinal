@@ -220,7 +220,11 @@ export const api = {
       status:          string;
       incident_id:     string;
       option_executed: number;
-      result:          unknown;
+      option_title?:   string;
+      mcp_action?:     string;
+      message?:        string;
+      approved_at?:    string;
+      audit_logged?:   boolean;
     }>('/api/approve', {
       incident_id:     incidentId,
       option_rank:     optionRank,

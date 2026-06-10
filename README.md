@@ -155,6 +155,32 @@ Reproduce: `python -m scripts.adversarial_stress_test` · `python -m scripts.val
 
 ---
 
+## Cost Model
+
+QuerySentinel's economics are deliberately lopsided. Every figure below comes from the
+**transparent, configurable** formula in [`impact.py`](backend/impact.py) — no hidden magic;
+tune the constants for your own environment.
+
+| Metric | QuerySentinel | Manual baseline |
+|--------|---------------|-----------------|
+| Detection → diagnosis | ~seconds | hours (typical MTTR) |
+| Cost per investigation | ~$0.08 in model tokens* | ~$510 (3.4 h × $150/h, configurable) |
+| Per-incident ratio | **~6,800× cheaper** | — |
+
+\* *Illustrative:* a full agent investigation is ~5–8 Gemini calls (~20K in / 5K out tokens).
+At Gemini 3.5 Flash pricing that's ≈ $0.075. Exact spend varies per incident.
+
+**Downtime context** (published industry benchmarks — ITIC / Uptime Institute, *not* our own
+numbers): 90%+ of enterprises report a single hour of downtime costs **$300K+**, and the average
+enterprise sees **2–4 material incidents/year** — a six-figure annual exposure that QuerySentinel
+triages in seconds instead of hours.
+
+> ⚖️ All dollar figures are a **transparent model, not a guarantee.** The constants in
+> `impact.py` (engineer rate, triage hours, QPS cost proxy) are configurable per deployment,
+> and the per-incident value is recomputed live from your actual collection size and Z-score.
+
+---
+
 ## Challenges We Ran Into
 
 Real engineering problems we navigated — and how we solved each:

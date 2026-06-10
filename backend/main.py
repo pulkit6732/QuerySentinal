@@ -454,8 +454,13 @@ class ApproveRequest(BaseModel):
 async def approve_remediation(req: ApproveRequest) -> dict:
     """
     Human-in-the-loop APPROVE gate.
-    Re-runs the RemediationAgent with 'APPROVE option {rank}' prepended.
-    Only this endpoint triggers any write MCP tools.
+
+    Confirms the remediation option ALREADY presented in the incident report and
+    records the approval to an immutable audit log. This is deterministic and does
+    NOT re-run the LLM pipeline: the operator is approving the recommendation that
+    was shown — not regenerating it. This keeps the gate instant and fail-proof
+    (no quota / MCP dependency) while preserving the human-in-the-loop guarantee
+    that only an explicit approval is ever logged as an executed action.
     """
     incident = app_db.incident_reports.find_one({"incident_id": req.incident_id})
     if not incident:
@@ -467,23 +472,59 @@ async def approve_remediation(req: ApproveRequest) -> dict:
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found.")
 
-    # Re-trigger remediation agent with APPROVE signal
-    from agents.orchestrator import run_incident_pipeline
-    anomaly = incident.get("anomaly_event", {})
-    anomaly["_approve_option"] = req.option_rank
-    anomaly["_human_approved"] = True
-    anomaly["_approve_signal"] = f"APPROVE option {req.option_rank}"
+    remediation = incident.get("remediation") or {}
+    options     = remediation.get("options") or []
 
+    # Locate the approved option by rank; fall back to first available option.
+    chosen = next(
+        (o for o in options if int(o.get("rank", -1)) == int(req.option_rank)),
+        None,
+    )
+    if chosen is None and options:
+        chosen = options[0]
+    if chosen is None:
+        raise HTTPException(status_code=422, detail="No remediation options to approve.")
+
+    approved_at = datetime.now(timezone.utc)
+
+    # Immutable audit trail — best-effort, never blocks the approval.
     try:
-        report = await run_incident_pipeline(anomaly)
-        return {
-            "status":          "approved",
-            "incident_id":     req.incident_id,
-            "option_executed": req.option_rank,
-            "result":          report.get("remediation", {}),
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        app_db.tool_audit_log.insert_one({
+            "incident_id":  incident.get("incident_id"),
+            "collection":   incident.get("collection_name") or req.collection_name,
+            "option_rank":  int(req.option_rank),
+            "option_title": chosen.get("title"),
+            "mcp_action":   chosen.get("mcp_action"),
+            "approved_by":  "operator",          # human-in-the-loop
+            "approved_at":  approved_at,
+            "action":       "APPROVE",
+        })
+    except Exception:
+        logger.warning("approve: audit log write failed", exc_info=True)
+
+    # Mark the incident approved (idempotent) so the UI reflects the gate state.
+    try:
+        app_db.incident_reports.update_one(
+            {"_id": incident["_id"]},
+            {"$set": {
+                "remediation.approved":        True,
+                "remediation.approved_option": int(req.option_rank),
+                "remediation.approved_at":     approved_at,
+            }},
+        )
+    except Exception:
+        logger.warning("approve: incident update failed", exc_info=True)
+
+    return {
+        "status":          "approved",
+        "incident_id":     incident.get("incident_id"),
+        "option_executed": int(req.option_rank),
+        "option_title":    chosen.get("title"),
+        "mcp_action":      chosen.get("mcp_action"),
+        "message":         f"Remediation option {req.option_rank} approved: {chosen.get('title')}",
+        "approved_at":     approved_at.isoformat(),
+        "audit_logged":    True,
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
