@@ -17,6 +17,20 @@
 
 ---
 
+## Live Demo
+
+| | |
+|---|---|
+| **Hosted dashboard** | https://query-sentinal.vercel.app |
+| **Demo video** | https://youtu.be/bX0-YtkLyAI |
+| **Source** | https://github.com/pulkit6732/QuerySentinal |
+
+Open the dashboard, click **Inject Test Anomaly**, and watch the Gemini agent pipeline investigate a live MongoDB anomaly through the MongoDB MCP server — root cause, evidence, and a ranked remediation gated behind a human APPROVE.
+
+![QuerySentinel dashboard — live anomaly feed, semantic velocity spike, and database health](dashboard.png)
+
+---
+
 ## The Problem
 
 MongoDB production databases fail silently. A document size explodes. A schema drifts. A semantic category shifts. By the time your monitoring dashboard turns red, the damage — replication lag, query degradation, revenue loss — has already propagated.
@@ -54,12 +68,13 @@ This is built entirely on Atlas. Zero lines of embedding code. Zero separate vec
 ```
 Atlas Change Stream ──→ Watcher (PyMongo) ──→ Google ADK Pipeline
          │                     │                       │
-         │              [Persist Resume Token]   [5-agent pipeline · MCP-sequential default]
-         │              [Circuit Breaker]        ├── AnomalyContextAgent
-         │              [Dead Letter Queue]      ├── SchemaDriftAgent
-         ▼                                       ├── SimilarIncidentAgent (voyage-4)
-   ASP Stream Processing                         ├── RootCauseAgent (PA)
-   $tumblingWindow 60s                           └── RemediationAgent
+         │              [Persist Resume Token]   IncidentOrchestrator (SequentialAgent)
+         │              [Circuit Breaker]        │  → 5 specialists · MCP-sequential default
+         │              [Dead Letter Queue]      ├── AnomalyContextAgent
+         ▼                                       ├── SchemaDriftAgent
+   ASP Stream Processing                         ├── SimilarIncidentAgent (voyage-4)
+   $tumblingWindow 60s                           ├── RootCauseAgent (PA)
+         │                                       └── RemediationAgent
          │                                               │
          ▼                                         [APPROVE Gate]
    stream_stats ──→ Runway Prediction              │
@@ -109,7 +124,7 @@ IncidentOrchestrator (Gemini 3.5 Flash)
 └── RemediationAgent         → read-only until APPROVE; then create-index via MCP
 ```
 
-All 5 agents run on Gemini 3.5 Flash (GA May 19, 2026 — $1.50/1M input tokens, 1M context window).
+All six Gemini agents — the IncidentOrchestrator (a `SequentialAgent`) plus its 5 specialist investigators — run on Gemini 3.5 Flash (GA May 19, 2026 — $1.50/1M input tokens, 1M context window). Built on **Google ADK 1.3.0**, part of Google Cloud's Agent Builder suite.
 
 **Human-in-the-loop gate**: RemediationAgent returns 3 ranked options. `create-index` only fires when the exact word `APPROVE` appears in the input. This is an architectural guarantee in the agent instruction, not a UI convention.
 
@@ -284,18 +299,16 @@ gcloud run deploy querysentinel \
 
 ---
 
-## Demo Walkthrough (3-minute video script)
+## Demo Walkthrough
 
-1. **[0:00]** Dashboard loads → Database Health Card showing P99 sizes + health scores
-2. **[0:20]** Click "Inject Test Anomaly" → 700KB document inserted into sample_supplies.sales
-3. **[0:25]** Change Stream fires → Anomaly appears in Live Feed (within 200ms)
-4. **[0:40]** Click anomaly row → Incident modal opens → Summary tab shows severity/Z-score
-5. **[1:00]** Agent Reasoning tab → ADK pipeline visualization → 5 agents, tools called, outputs
-6. **[1:20]** Evidence tab → Confidence breakdown (PA 35% + VS 30% + Schema 20% + Z 15%)
-7. **[1:40]** Remediation tab → 3 ranked options → Click "APPROVE Option 1"
-8. **[2:00]** MCP creates index → Index status polling → Real explain() comparison
-9. **[2:20]** Semantic Velocity section → Show centroid drift visualization + explain novel detection
-10. **[2:50]** Runway section → Show write-rate trend + time-to-critical prediction
+The demo video shows a full incident lifecycle end to end:
+
+1. Dashboard at rest → Database Health Card (P99 document sizes, health scores) + live Semantic Velocity.
+2. Contaminated documents enter `sample_mflix.movies` (300 KB each) → Change Stream fires → anomalies appear in the Live Feed within ~200 ms.
+3. A **CRITICAL** Semantic Velocity Spike is raised (centroid drift Z ≈ 7) — the meaning of the data shifted, invisible to structural monitors.
+4. Open the incident → **Agent Reasoning** tab: the Gemini agent pipeline investigating through the MongoDB MCP server.
+5. **Evidence** tab: weighted confidence breakdown (Performance Advisor 35% + Vector Search 30% + Schema 20% + Z-score 15%).
+6. **Remediation** tab: ranked options behind a human-in-the-loop gate → click **APPROVE** → the decision is recorded to the immutable audit trail.
 
 ---
 
