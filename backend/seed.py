@@ -262,11 +262,32 @@ def ensure_vector_index(db) -> None:
     Atlas Search indexes are created asynchronously — the call returns
     immediately but the index takes 1–3 minutes to become queryable.
     """
+    want_dims = VECTOR_INDEX_DEFINITION["definition"]["fields"][0]["numDimensions"]
     try:
         existing = list(db.anomaly_history.list_search_indexes(name=VECTOR_INDEX_NAME))
         if existing:
-            logger.info("Vector index '%s' already exists. Skipping create.", VECTOR_INDEX_NAME)
-            return
+            # Self-heal: a stale index built for the wrong dimension silently
+            # indexes nothing (the stored vectors don't match), so vector search
+            # returns empty. Detect the mismatch and rebuild at the correct dim.
+            have_dims = None
+            for f in existing[0].get("latestDefinition", {}).get("fields", []):
+                if f.get("type") == "vector":
+                    have_dims = f.get("numDimensions")
+                    break
+            if have_dims == want_dims:
+                logger.info("Vector index '%s' exists at %d dims. OK.", VECTOR_INDEX_NAME, want_dims)
+                return
+            logger.warning(
+                "Vector index '%s' has %s dims but data needs %d — dropping and rebuilding.",
+                VECTOR_INDEX_NAME, have_dims, want_dims,
+            )
+            db.anomaly_history.drop_search_index(VECTOR_INDEX_NAME)
+            # Wait for the drop to finish before recreating (Atlas is async).
+            import time as _t
+            for _ in range(30):
+                if not list(db.anomaly_history.list_search_indexes(name=VECTOR_INDEX_NAME)):
+                    break
+                _t.sleep(2)
     except Exception as e:
         # Older drivers don't have list_search_indexes; fall through to create
         logger.debug("list_search_indexes unavailable (%s); attempting create.", e)

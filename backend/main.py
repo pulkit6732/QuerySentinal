@@ -223,21 +223,29 @@ async def health() -> dict:
         {"retry_count": {"$lt": 3}}
     )
 
-    # vectorSearch index reachable? Must use a real queryVector (the index has no
-    # text auto-embedding), so embed a probe string locally first.
+    # vectorSearch index reachable? Probe with a REAL stored vector so the query
+    # dimension always matches the indexed dimension. This is robust by design:
+    # no local embedder dependency (works on hosted instances without fastembed)
+    # and immune to embed-model dimension drift.
     try:
-        from agents.mongo_fn_tools import _embed_text_local
-        _pv = _embed_text_local("health probe")
-        list(app_db.anomaly_history.aggregate([
-            {"$vectorSearch": {
-                "index": "anomaly_semantic",
-                "queryVector": _pv,
-                "path": "embedding",
-                "numCandidates": 1,
-                "limit": 1,
-            }},
-        ]))
-        status["vector_search"] = "ok"
+        _seed = app_db.anomaly_history.find_one(
+            {"embedding": {"$exists": True}}, {"embedding": 1, "_id": 0}
+        )
+        _pv = (_seed or {}).get("embedding")
+        if not _pv:
+            # No vectors stored yet — the subsystem is healthy, just unseeded.
+            status["vector_search"] = "ok"
+        else:
+            list(app_db.anomaly_history.aggregate([
+                {"$vectorSearch": {
+                    "index": "anomaly_semantic",
+                    "queryVector": _pv,
+                    "path": "embedding",
+                    "numCandidates": 5,
+                    "limit": 1,
+                }},
+            ]))
+            status["vector_search"] = "ok"
     except Exception as e:
         status["vector_search"] = f"error: {str(e)[:80]}"
 
