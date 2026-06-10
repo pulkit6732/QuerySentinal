@@ -1,0 +1,951 @@
+{
+  "timestamp": "2026-05-29T10:56:56.540954+00:00",
+  "summary": {
+    "total": 88,
+    "passed": 88,
+    "failed": 0,
+    "total_ms": 37024.5,
+    "by_category": {
+      "evasion": {
+        "pass": 29,
+        "fail": 0,
+        "total_ms": 1.6779999999999997
+      },
+      "evasion_summary": {
+        "pass": 1,
+        "fail": 0,
+        "total_ms": 0
+      },
+      "accuracy": {
+        "pass": 1,
+        "fail": 0,
+        "total_ms": 45.31
+      },
+      "cascade": {
+        "pass": 10,
+        "fail": 0,
+        "total_ms": 32.38700000000001
+      },
+      "memory": {
+        "pass": 6,
+        "fail": 0,
+        "total_ms": 122.94700000000002
+      },
+      "concurrent": {
+        "pass": 2,
+        "fail": 0,
+        "total_ms": 61.168
+      },
+      "mongodb_overload": {
+        "pass": 4,
+        "fail": 0,
+        "total_ms": 14445.871000000001
+      },
+      "rate_limiter": {
+        "pass": 5,
+        "fail": 0,
+        "total_ms": 0.613
+      },
+      "semantic_velocity": {
+        "pass": 8,
+        "fail": 0,
+        "total_ms": 7.1450000000000005
+      },
+      "schema_corrupt": {
+        "pass": 10,
+        "fail": 0,
+        "total_ms": 0.34700000000000003
+      },
+      "callbacks": {
+        "pass": 3,
+        "fail": 0,
+        "total_ms": 24.211
+      },
+      "impact": {
+        "pass": 9,
+        "fail": 0,
+        "total_ms": 798.7429999999999
+      }
+    }
+  },
+  "tests": [
+    {
+      "category": "evasion",
+      "test": "case_mix_override",
+      "passed": true,
+      "ms": 0.189,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion",
+      "test": "case_mix_forget",
+      "passed": true,
+      "ms": 0.11,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion",
+      "test": "homoglyph_ignore",
+      "passed": true,
+      "ms": 0.033,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "homoglyph_system",
+      "passed": true,
+      "ms": 0.026,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "zero_width_ignore",
+      "passed": true,
+      "ms": 0.02,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "zero_width_forget",
+      "passed": true,
+      "ms": 0.016,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "rtl_override",
+      "passed": true,
+      "ms": 0.014,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "base64_encoded",
+      "passed": true,
+      "ms": 0.019,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "url_encoded",
+      "passed": true,
+      "ms": 0.034,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "spaced_injection",
+      "passed": true,
+      "ms": 0.024,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "leet_ignore",
+      "passed": true,
+      "ms": 0.028,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "repeat_chars",
+      "passed": true,
+      "ms": 0.215,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion",
+      "test": "null_byte",
+      "passed": true,
+      "ms": 0.024,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "newline_injection",
+      "passed": true,
+      "ms": 0.091,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion",
+      "test": "tab_injection",
+      "passed": true,
+      "ms": 0.073,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion",
+      "test": "html_tag_injection",
+      "passed": true,
+      "ms": 0.068,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion",
+      "test": "markdown_injection",
+      "passed": true,
+      "ms": 0.026,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "json_in_string",
+      "passed": true,
+      "ms": 0.069,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion",
+      "test": "multiline_system",
+      "passed": true,
+      "ms": 0.033,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "polyglot_es",
+      "passed": true,
+      "ms": 0.022,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "polyglot_fr",
+      "passed": true,
+      "ms": 0.031,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "polyglot_zh",
+      "passed": true,
+      "ms": 0.019,
+      "detected": false,
+      "matches": 0,
+      "confidence": 0.0
+    },
+    {
+      "category": "evasion",
+      "test": "emoji_padding",
+      "passed": true,
+      "ms": 0.069,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion",
+      "test": "code_comment",
+      "passed": true,
+      "ms": 0.06,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion",
+      "test": "sql_style",
+      "passed": true,
+      "ms": 0.079,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion",
+      "test": "delimiter_attack",
+      "passed": true,
+      "ms": 0.065,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion",
+      "test": "dan_variant",
+      "passed": true,
+      "ms": 0.067,
+      "detected": true,
+      "matches": 2,
+      "confidence": 0.7
+    },
+    {
+      "category": "evasion",
+      "test": "cognitive_override",
+      "passed": true,
+      "ms": 0.08,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion",
+      "test": "deferred_conditional",
+      "passed": true,
+      "ms": 0.074,
+      "detected": true,
+      "matches": 1,
+      "confidence": 0.35
+    },
+    {
+      "category": "evasion_summary",
+      "test": "detection_rate",
+      "passed": true,
+      "ms": 0,
+      "detected": 14,
+      "total": 29,
+      "detection_pct": 48.3,
+      "evasion_pct": 51.7
+    },
+    {
+      "category": "accuracy",
+      "test": "full_500_audit",
+      "passed": true,
+      "ms": 45.31,
+      "total": 500,
+      "TP": 200,
+      "TN": 250,
+      "FP": 0,
+      "FN": 50,
+      "precision": 1.0,
+      "recall": 0.8,
+      "F1_score": 0.889,
+      "FPR": 0.0,
+      "FNR": 0.2,
+      "throughput_per_sec": 11035
+    },
+    {
+      "category": "cascade",
+      "test": "injection_plus_schema_drift",
+      "passed": true,
+      "ms": 0.094,
+      "threat": true,
+      "matches": 2,
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "patterns": [
+        "INSTRUCTION_OVERRIDE",
+        "IDENTITY_OVERRIDE"
+      ]
+    },
+    {
+      "category": "cascade",
+      "test": "injection_plus_size_bomb",
+      "passed": true,
+      "ms": 31.472,
+      "threat": true,
+      "matches": 1,
+      "severity": "WARNING",
+      "confidence": 0.35,
+      "patterns": [
+        "CONTEXT_WIPE"
+      ]
+    },
+    {
+      "category": "cascade",
+      "test": "triple_vector",
+      "passed": true,
+      "ms": 0.138,
+      "threat": true,
+      "matches": 3,
+      "severity": "CRITICAL",
+      "confidence": 1.0,
+      "patterns": [
+        "INSTRUCTION_OVERRIDE",
+        "SYSTEM_PROMPT_INJECTION",
+        "SYSTEM_PROMPT_INJECTION"
+      ]
+    },
+    {
+      "category": "cascade",
+      "test": "nested_injection",
+      "passed": true,
+      "ms": 0.076,
+      "threat": true,
+      "matches": 1,
+      "severity": "WARNING",
+      "confidence": 0.35,
+      "patterns": [
+        "INSTRUCTION_OVERRIDE"
+      ]
+    },
+    {
+      "category": "cascade",
+      "test": "list_injection",
+      "passed": true,
+      "ms": 0.084,
+      "threat": true,
+      "matches": 2,
+      "severity": "CRITICAL",
+      "confidence": 0.7,
+      "patterns": [
+        "INSTRUCTION_OVERRIDE",
+        "SYSTEM_PROMPT_INJECTION"
+      ]
+    },
+    {
+      "category": "cascade",
+      "test": "false_positives_cascade",
+      "passed": true,
+      "ms": 0.109,
+      "threat": true,
+      "matches": 1,
+      "severity": "WARNING",
+      "confidence": 0.35,
+      "patterns": [
+        "INSTRUCTION_OVERRIDE"
+      ]
+    },
+    {
+      "category": "cascade",
+      "test": "encoding_cascade",
+      "passed": true,
+      "ms": 0.116,
+      "threat": true,
+      "matches": 1,
+      "severity": "WARNING",
+      "confidence": 0.35,
+      "patterns": [
+        "INSTRUCTION_OVERRIDE"
+      ]
+    },
+    {
+      "category": "cascade",
+      "test": "tool_injection_combo",
+      "passed": true,
+      "ms": 0.113,
+      "threat": true,
+      "matches": 3,
+      "severity": "CRITICAL",
+      "confidence": 1.0,
+      "patterns": [
+        "TOOL_INJECTION",
+        "JAILBREAK_ATTEMPT",
+        "CODE_INJECTION_ATTEMPT"
+      ]
+    },
+    {
+      "category": "cascade",
+      "test": "data_poisoning_realistic",
+      "passed": true,
+      "ms": 0.054,
+      "threat": false,
+      "matches": 0,
+      "severity": null,
+      "confidence": 0.0,
+      "patterns": []
+    },
+    {
+      "category": "cascade",
+      "test": "slow_burn_deferred",
+      "passed": true,
+      "ms": 0.131,
+      "threat": true,
+      "matches": 2,
+      "severity": "CRITICAL",
+      "confidence": 0.7,
+      "patterns": [
+        "TRAINING_BYPASS",
+        "PROMPT_EXFILTRATION"
+      ]
+    },
+    {
+      "category": "memory",
+      "test": "10mb_single_field",
+      "passed": true,
+      "ms": 16.917,
+      "size_mb": 10,
+      "threat": false
+    },
+    {
+      "category": "memory",
+      "test": "injection_buried_50kb",
+      "passed": true,
+      "ms": 21.003,
+      "detected": true,
+      "matches": 1
+    },
+    {
+      "category": "memory",
+      "test": "10k_fields_injection_at_end",
+      "passed": true,
+      "ms": 34.542,
+      "field_count": 10000,
+      "detected": true
+    },
+    {
+      "category": "memory",
+      "test": "deep_nesting_10_levels",
+      "passed": true,
+      "ms": 0.028,
+      "depth": 10,
+      "max_scan_depth": 5,
+      "detected": false,
+      "note": "depth>5 truncated by design \u2014 injection at L10 is inaccessible to scanner"
+    },
+    {
+      "category": "memory",
+      "test": "list_flood_10k_items",
+      "passed": true,
+      "ms": 5.93,
+      "items": 10000,
+      "detected": true
+    },
+    {
+      "category": "memory",
+      "test": "1000_fields_midpoint_injection",
+      "passed": true,
+      "ms": 44.527,
+      "field_count": 1001,
+      "detected": true
+    },
+    {
+      "category": "concurrent",
+      "test": "200_parallel_scans_50_threads",
+      "passed": true,
+      "ms": 52.052,
+      "total": 200,
+      "correct": 200,
+      "errors": 0,
+      "accuracy_pct": 100.0,
+      "throughput": 3842,
+      "ms_per_doc_avg": 0.26
+    },
+    {
+      "category": "concurrent",
+      "test": "incident_registry_100_threads_1000_writes",
+      "passed": true,
+      "ms": 9.116,
+      "threads": 100,
+      "total_ops": 1000,
+      "errors": 0,
+      "registry_size_after": 50
+    },
+    {
+      "category": "mongodb_overload",
+      "test": "50_concurrent_reads",
+      "passed": true,
+      "ms": 2911.077,
+      "requests": 50,
+      "errors": 0,
+      "throughput_rps": 17,
+      "avg_ms": 58.2
+    },
+    {
+      "category": "mongodb_overload",
+      "test": "100_inserts_flood",
+      "passed": true,
+      "ms": 9479.54,
+      "docs": 100,
+      "writes_per_sec": 11,
+      "delete_ms": 160.3
+    },
+    {
+      "category": "mongodb_overload",
+      "test": "10_concurrent_heavy_aggregations",
+      "passed": true,
+      "ms": 671.781,
+      "concurrent": 10,
+      "errors": 0,
+      "avg_agg_ms": 67.2
+    },
+    {
+      "category": "mongodb_overload",
+      "test": "5_vector_searches_sequential",
+      "passed": true,
+      "ms": 1383.473,
+      "queries": 5,
+      "errors": 5,
+      "results": [
+        "ERR: PlanExecutor error during aggregation :: caused by :: vector",
+        "ERR: PlanExecutor error during aggregation :: caused by :: vector",
+        "ERR: PlanExecutor error during aggregation :: caused by :: vector",
+        "ERR: PlanExecutor error during aggregation :: caused by :: vector",
+        "ERR: PlanExecutor error during aggregation :: caused by :: vector"
+      ],
+      "avg_ms": 276.7,
+      "index_status": "building (wait 1-3 min)"
+    },
+    {
+      "category": "rate_limiter",
+      "test": "acquire_12_at_capacity",
+      "passed": true,
+      "ms": 0.213,
+      "acquired": 12,
+      "distribution": {
+        "e_key_A": 3,
+        "e_key_B": 3,
+        "e_key_D": 3,
+        "e_key_C": 3
+      },
+      "max_per_key": 3
+    },
+    {
+      "category": "rate_limiter",
+      "test": "all_4_keys_fully_loaded",
+      "passed": true,
+      "ms": 0.1,
+      "keys": {
+        "..._key_A": "3/3",
+        "..._key_B": "3/3",
+        "..._key_C": "3/3",
+        "..._key_D": "3/3"
+      }
+    },
+    {
+      "category": "rate_limiter",
+      "test": "fairness_30_across_3_keys",
+      "passed": true,
+      "ms": 0.1,
+      "distribution": {
+        "r_key_1": 10,
+        "r_key_3": 10,
+        "r_key_2": 10
+      },
+      "max_deviation": 0,
+      "perfectly_even": true
+    },
+    {
+      "category": "rate_limiter",
+      "test": "dirty_config_filters_empty_keys",
+      "passed": true,
+      "ms": 0.1,
+      "raw_count": 4,
+      "valid_count": 1,
+      "keys": [
+        "valid_key_X"
+      ]
+    },
+    {
+      "category": "rate_limiter",
+      "test": "5_acquires_single_key_no_wait",
+      "passed": true,
+      "ms": 0.1,
+      "acquires": 5,
+      "limit": 5,
+      "note": "all under limit so no sleep needed"
+    },
+    {
+      "category": "semantic_velocity",
+      "test": "gradual_drift",
+      "passed": true,
+      "ms": 1.09,
+      "description": "Slow linear drift 48h \u2014 noise only",
+      "peak_z": 0.31,
+      "cumulative": 0.0002,
+      "status": "normal",
+      "detected": false,
+      "expected": false,
+      "centroids": 48
+    },
+    {
+      "category": "semantic_velocity",
+      "test": "sudden_spike",
+      "passed": true,
+      "ms": 0.878,
+      "description": "Single massive spike at hour 40 \u2014 CRITICAL",
+      "peak_z": 31061.77,
+      "cumulative": 1.0109,
+      "status": "spike",
+      "detected": true,
+      "expected": true,
+      "centroids": 48
+    },
+    {
+      "category": "semantic_velocity",
+      "test": "zero_variance",
+      "passed": true,
+      "ms": 0.655,
+      "description": "All identical centroids \u2014 no variance (edge case)",
+      "peak_z": 0.0,
+      "cumulative": 0.0,
+      "status": "normal",
+      "detected": false,
+      "expected": false,
+      "centroids": 48
+    },
+    {
+      "category": "semantic_velocity",
+      "test": "adversarial_oscil",
+      "passed": true,
+      "ms": 0.615,
+      "description": "Strong oscillating inject every 4h",
+      "peak_z": 1.0,
+      "cumulative": 2.0173,
+      "status": "cumulative_drift",
+      "detected": true,
+      "expected": true,
+      "centroids": 48
+    },
+    {
+      "category": "semantic_velocity",
+      "test": "slow_poison_5day",
+      "passed": true,
+      "ms": 1.196,
+      "description": "120h gradual poisoning \u2014 cumulative drift",
+      "peak_z": 2.48,
+      "cumulative": 0.4634,
+      "status": "elevated",
+      "detected": true,
+      "expected": true,
+      "centroids": 120
+    },
+    {
+      "category": "semantic_velocity",
+      "test": "burst_flood",
+      "passed": true,
+      "ms": 1.379,
+      "description": "10 consecutive poisoned hours",
+      "peak_z": 0.42,
+      "cumulative": 4.9195,
+      "status": "cumulative_drift",
+      "detected": true,
+      "expected": true,
+      "centroids": 48
+    },
+    {
+      "category": "semantic_velocity",
+      "test": "single_bad_hour",
+      "passed": true,
+      "ms": 0.644,
+      "description": "1 bad hour among 47 clean \u2014 small spike",
+      "peak_z": 129623.03,
+      "cumulative": 1.0047,
+      "status": "spike",
+      "detected": true,
+      "expected": true,
+      "centroids": 48
+    },
+    {
+      "category": "semantic_velocity",
+      "test": "heavy_noise",
+      "passed": true,
+      "ms": 0.688,
+      "description": "High background noise \u2014 high FP risk",
+      "peak_z": 0.41,
+      "cumulative": 0.0586,
+      "status": "normal",
+      "detected": false,
+      "expected": false,
+      "centroids": 48
+    },
+    {
+      "category": "schema_corrupt",
+      "test": "all_null_fields",
+      "passed": true,
+      "ms": 0.064,
+      "threat": false,
+      "crashes": false,
+      "confidence": 0.0
+    },
+    {
+      "category": "schema_corrupt",
+      "test": "type_flip_attack",
+      "passed": true,
+      "ms": 0.029,
+      "threat": false,
+      "crashes": false,
+      "confidence": 0.0
+    },
+    {
+      "category": "schema_corrupt",
+      "test": "null_byte_keys",
+      "passed": true,
+      "ms": 0.007,
+      "threat": false,
+      "crashes": false,
+      "confidence": 0.0
+    },
+    {
+      "category": "schema_corrupt",
+      "test": "prototype_pollution",
+      "passed": true,
+      "ms": 0.009,
+      "threat": false,
+      "crashes": false,
+      "confidence": 0.0
+    },
+    {
+      "category": "schema_corrupt",
+      "test": "deeply_null_nested",
+      "passed": true,
+      "ms": 0.009,
+      "threat": false,
+      "crashes": false,
+      "confidence": 0.0
+    },
+    {
+      "category": "schema_corrupt",
+      "test": "key_bomb_100",
+      "passed": true,
+      "ms": 0.053,
+      "threat": false,
+      "crashes": false,
+      "confidence": 0.0
+    },
+    {
+      "category": "schema_corrupt",
+      "test": "numeric_string_mix",
+      "passed": true,
+      "ms": 0.017,
+      "threat": false,
+      "crashes": false,
+      "confidence": 0.0
+    },
+    {
+      "category": "schema_corrupt",
+      "test": "empty_strings_flood",
+      "passed": true,
+      "ms": 0.085,
+      "threat": false,
+      "crashes": false,
+      "confidence": 0.0
+    },
+    {
+      "category": "schema_corrupt",
+      "test": "boolean_flip",
+      "passed": true,
+      "ms": 0.007,
+      "threat": false,
+      "crashes": false,
+      "confidence": 0.0
+    },
+    {
+      "category": "schema_corrupt",
+      "test": "injection_in_key",
+      "passed": true,
+      "ms": 0.067,
+      "threat": true,
+      "crashes": false,
+      "confidence": 0.2
+    },
+    {
+      "category": "callbacks",
+      "test": "concurrent_200_set_incident_context",
+      "passed": true,
+      "ms": 15.153,
+      "threads": 50,
+      "ops": 200,
+      "errors": 0,
+      "registry_size": 50,
+      "max_allowed": 50,
+      "size_ok": true
+    },
+    {
+      "category": "callbacks",
+      "test": "registry_isolation_eviction_policy_works",
+      "passed": true,
+      "ms": 0.1,
+      "evicted": true,
+      "note": "entry evicted correctly \u2014 FIFO eviction working"
+    },
+    {
+      "category": "callbacks",
+      "test": "llm_scan_100_concurrent_threads",
+      "passed": true,
+      "ms": 8.958,
+      "total": 100,
+      "injection_detected": 35,
+      "clean_detected": 15,
+      "fp_rate": "30%",
+      "tp_rate": "70%"
+    },
+    {
+      "category": "impact",
+      "test": "extreme_z_100",
+      "passed": true,
+      "ms": 81.277
+    },
+    {
+      "category": "impact",
+      "test": "negative_z",
+      "passed": true,
+      "ms": 94.009
+    },
+    {
+      "category": "impact",
+      "test": "zero_z",
+      "passed": true,
+      "ms": 77.248
+    },
+    {
+      "category": "impact",
+      "test": "unknown_collection",
+      "passed": true,
+      "ms": 79.886
+    },
+    {
+      "category": "impact",
+      "test": "empty_collection",
+      "passed": true,
+      "ms": 71.732
+    },
+    {
+      "category": "impact",
+      "test": "unknown_anomaly_type",
+      "passed": true,
+      "ms": 86.359
+    },
+    {
+      "category": "impact",
+      "test": "very_small_z",
+      "passed": true,
+      "ms": 132.693
+    },
+    {
+      "category": "impact",
+      "test": "boundary_critical",
+      "passed": true,
+      "ms": 85.071
+    },
+    {
+      "category": "impact",
+      "test": "null_collection",
+      "passed": true,
+      "ms": 90.468
+    }
+  ]
+}

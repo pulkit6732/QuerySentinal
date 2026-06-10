@@ -1,0 +1,136 @@
+###############################################################################
+# cloudbuild.yaml — QUERYSENTINEL CI/CD pipeline for Google Cloud Build
+#
+# Builds + deploys both backend (FastAPI) and frontend (Next.js) to Cloud Run.
+#
+# Usage:
+#   gcloud builds submit --config cloudbuild.yaml .
+#
+# Required substitutions (set in Cloud Build trigger or --substitutions flag):
+#   _LOCATION       — Cloud Run region, e.g. us-central1
+#   _AR_REPO        — Artifact Registry repo name, e.g. querysentinel
+#   _BACKEND_SVC    — Cloud Run backend service name
+#   _FRONTEND_SVC   — Cloud Run frontend service name
+#   _API_URL        — Public URL of the backend service (used at frontend build time)
+#
+# Secrets expected in Secret Manager (mounted at deploy time, not build time):
+#   mongodb-uri          — MONGODB_URI
+#   atlas-client-id      — ATLAS_CLIENT_ID
+#   atlas-client-secret  — ATLAS_CLIENT_SECRET
+#   atlas-project-id     — ATLAS_PROJECT_ID
+#   google-api-key       — GOOGLE_API_KEY (for Gemini)
+###############################################################################
+
+substitutions:
+  _LOCATION:    us-central1
+  _AR_REPO:     querysentinel
+  _BACKEND_SVC: querysentinel-backend
+  _FRONTEND_SVC: querysentinel-frontend
+  _API_URL:     ""    # set in trigger: https://querysentinel-backend-<hash>-uc.a.run.app
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+steps:
+
+  # ── Backend: build ──────────────────────────────────────────────────────────
+  - id: build-backend
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --tag
+      - ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/backend:$COMMIT_SHA
+      - --tag
+      - ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/backend:latest
+      - --cache-from
+      - ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/backend:latest
+      - --file
+      - backend/Dockerfile
+      - ./backend
+
+  # ── Backend: push ───────────────────────────────────────────────────────────
+  - id: push-backend
+    name: gcr.io/cloud-builders/docker
+    waitFor: [build-backend]
+    args:
+      - push
+      - --all-tags
+      - ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/backend
+
+  # ── Frontend: build ─────────────────────────────────────────────────────────
+  - id: build-frontend
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --tag
+      - ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/frontend:$COMMIT_SHA
+      - --tag
+      - ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/frontend:latest
+      - --cache-from
+      - ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/frontend:latest
+      - --build-arg
+      - NEXT_PUBLIC_API_URL=${_API_URL}
+      - --file
+      - frontend/Dockerfile
+      - ./frontend
+
+  # ── Frontend: push ──────────────────────────────────────────────────────────
+  - id: push-frontend
+    name: gcr.io/cloud-builders/docker
+    waitFor: [build-frontend]
+    args:
+      - push
+      - --all-tags
+      - ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/frontend
+
+  # ── Backend: deploy to Cloud Run ────────────────────────────────────────────
+  - id: deploy-backend
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [push-backend]
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_BACKEND_SVC}
+      - --image
+      - ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/backend:$COMMIT_SHA
+      - --region
+      - ${_LOCATION}
+      - --platform
+      - managed
+      - --no-allow-unauthenticated   # fronted by frontend proxy; remove if public API needed
+      - --min-instances=1            # prevent cold starts during demo
+      - --max-instances=3
+      - --memory=1Gi
+      - --cpu=1
+      - --concurrency=10
+      - --timeout=300
+      - --set-env-vars=APP_DB=querysentinel,SOURCE_DB=sample_mflix,PYTHONUNBUFFERED=1
+      - --update-secrets=MONGODB_URI=mongodb-uri:latest,ATLAS_CLIENT_ID=atlas-client-id:latest,ATLAS_CLIENT_SECRET=atlas-client-secret:latest,ATLAS_PROJECT_ID=atlas-project-id:latest,GOOGLE_API_KEY=google-api-key:latest
+
+  # ── Frontend: deploy to Cloud Run ───────────────────────────────────────────
+  - id: deploy-frontend
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [push-frontend, deploy-backend]
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_FRONTEND_SVC}
+      - --image
+      - ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/frontend:$COMMIT_SHA
+      - --region
+      - ${_LOCATION}
+      - --platform
+      - managed
+      - --allow-unauthenticated   # public dashboard
+      - --min-instances=1
+      - --max-instances=2
+      - --memory=512Mi
+      - --cpu=1
+      - --set-env-vars=NODE_ENV=production,NEXT_TELEMETRY_DISABLED=1
+
+images:
+  - ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/backend:$COMMIT_SHA
+  - ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/frontend:$COMMIT_SHA

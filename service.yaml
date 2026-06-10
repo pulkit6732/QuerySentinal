@@ -1,0 +1,115 @@
+###############################################################################
+# service.yaml — Cloud Run service definition for QUERYSENTINEL backend.
+#
+# Deploy / update:
+#   gcloud run services replace service.yaml --region us-central1
+#
+# Prerequisites:
+#   1. Artifact Registry repo:
+#      gcloud artifacts repositories create querysentinel \
+#        --repository-format=docker --location=us-central1
+#
+#   2. Secrets in Secret Manager (populate with versions before first deploy):
+#      gcloud secrets create mongodb-uri         --replication-policy=automatic
+#      gcloud secrets create atlas-client-id     --replication-policy=automatic
+#      gcloud secrets create atlas-client-secret --replication-policy=automatic
+#      gcloud secrets create atlas-project-id    --replication-policy=automatic
+#      gcloud secrets create google-api-key      --replication-policy=automatic
+#
+#   3. Image built via Cloud Build:
+#      gcloud builds submit --config cloudbuild.yaml .
+#
+# Before first deploy, replace PROJECT_ID and IMAGE_TAG below.
+###############################################################################
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: querysentinel-backend
+  labels:
+    cloud.googleapis.com/location: us-central1
+  annotations:
+    run.googleapis.com/launch-stage: GA
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"   # no cold starts during demo
+        autoscaling.knative.dev/maxScale: "3"
+        run.googleapis.com/cpu-throttling: "false"
+    spec:
+      containerConcurrency: 10
+      timeoutSeconds: 300
+
+      containers:
+        - image: us-central1-docker.pkg.dev/PROJECT_ID/querysentinel/backend:IMAGE_TAG
+
+          ports:
+            - name: http1
+              containerPort: 8080
+
+          resources:
+            limits:
+              cpu:    "1"
+              memory: 1Gi
+
+          env:
+            # Plain env vars
+            - name: APP_DB
+              value: querysentinel
+            - name: SOURCE_DB
+              value: sample_mflix
+            - name: MONITORED_COLLECTIONS
+              value: movies,comments,users,sessions
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: PORT
+              value: "8080"
+            # Secrets injected at runtime — never baked into the image
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-uri
+                  key: latest
+            - name: ATLAS_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: atlas-client-id
+                  key: latest
+            - name: ATLAS_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: atlas-client-secret
+                  key: latest
+            - name: ATLAS_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: atlas-project-id
+                  key: latest
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: google-api-key
+                  key: latest
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 6   # 60s budget for MCP npx first-run
+
+  traffic:
+    - percent: 100
+      latestRevision: true

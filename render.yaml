@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: querysentinel-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /health
+    envVars:
+      - key: APP_DB
+        value: querysentinel
+      - key: SOURCE_DB
+        value: sample_mflix
+      - key: MONITORED_COLLECTIONS
+        value: movies,comments,users,sessions,sales
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash
+      - key: ANOMALY_THRESHOLD_Z
+        value: "2.0"
+      - key: CRITICAL_THRESHOLD_Z
+        value: "3.5"
+      - key: OTEL_SDK_DISABLED
+        value: "true"
+      - key: OTEL_TRACES_EXPORTER
+        value: none
+      - key: OTEL_METRICS_EXPORTER
+        value: none
+      - key: OTEL_LOGS_EXPORTER
+        value: none
+      - key: PORT
+        value: "8080"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      # !! Add these as secrets in Render dashboard — never hardcode !!
+      - key: MONGODB_URI
+        sync: false   # Render will prompt you to fill this in
+      - key: GOOGLE_API_KEY
+        sync: false   # Render will prompt you to fill this in
